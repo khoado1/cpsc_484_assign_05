@@ -200,31 +200,29 @@ int AnimationTrack::moveKey(size_t index, float t, float eps) {
     if (index >= keys.size()) return -1;
     if (t < 0.0f) t = 0.0f;
 
-    // Remove the key from the vector and store it in a temporary variable
     Keyframe moved = keys[index];
     moved.time = t;
-    // Erase the key at the original index
     keys.erase(keys.begin() + index);
 
-    keys.push_back(moved);
-    std::sort(
-        keys.begin(), 
-        keys.end(),
-        [](const Keyframe& a, const Keyframe& b) {
-            return a.time < b.time;
-        }
-    );
-    
-    auto it = std::lower_bound(
-        keys.begin(),
-        keys.end(),
-        moved.time,
-        [](const Keyframe& inspectedKey, const float& timeToFind){
-            return std::fabs(inspectedKey.time - timeToFind) <= kTimeEpsilon;
-        }
-    );
+    // A move onto another key uses the same replacement rule as addKey().
+    // Find collisions only after erasing the moved key so it cannot collide
+    // with itself.
+    std::vector<Keyframe>::iterator collision = std::find_if(
+        keys.begin(), keys.end(),
+        [t, eps](const Keyframe& key) {
+            return std::fabs(key.time - t) <= eps;
+        });
+    if (collision != keys.end()) keys.erase(collision);
 
-    return static_cast<int>(std::distance(keys.begin(), it));
+    // lower_bound needs a strict ordering predicate; a tolerance predicate
+    // is not ordered and can return the wrong index after a drag.
+    std::vector<Keyframe>::iterator destination = std::lower_bound(
+        keys.begin(), keys.end(), t,
+        [](const Keyframe& key, float time) {
+            return key.time < time;
+        });
+    destination = keys.insert(destination, moved);
+    return static_cast<int>(std::distance(keys.begin(), destination));
 }
 
 bool AnimationTrack::evaluate(float t, Keyframe& out) const {

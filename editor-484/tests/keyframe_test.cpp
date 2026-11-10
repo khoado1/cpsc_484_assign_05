@@ -129,6 +129,16 @@ int main() {
             nearly(tr.keys[landed].time, 2.5f, "storage: and it is at its new time");
         } else { checks += 2; failures += 2; }
 
+        const int movedBack = tr.moveKey(static_cast<size_t>(landed), 0.5f);
+        ok(movedBack == 0 && tr.keys.size() == 4,
+           "storage: the returned index keeps tracking the selected key on "
+           "the next drag update");
+        if (movedBack >= 0 && static_cast<size_t>(movedBack) < tr.keys.size()) {
+            nearly(tr.keys[movedBack].position.x, 0.0f,
+                   "storage: consecutive moves keep the selected key, not a "
+                   "neighbour, under the pointer");
+        } else { ++checks; ++failures; }
+
         bool sorted = true;
         for (size_t i = 1; i < tr.keys.size(); ++i) {
             if (tr.keys[i].time < tr.keys[i - 1].time) sorted = false;

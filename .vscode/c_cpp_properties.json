@@ -1,0 +1,28 @@
+{
+    "configurations": [
+        {
+            "name": "macOS",
+            "includePath": [
+                "${workspaceFolder}/editor-484/include",
+                "${workspaceFolder}/editor-484/include/**",
+                "${workspaceFolder}/editor-484/src",
+                "${workspaceFolder}/editor-484/src/**",
+                "/opt/homebrew/include",
+                "/usr/local/include",
+                "/opt/local/include"
+            ],
+            "defines": [
+                "GLM_ENABLE_EXPERIMENTAL"
+            ],
+            "macFrameworkPath": [
+                "/System/Library/Frameworks",
+                "/Library/Frameworks"
+            ],
+            "compilerPath": "/usr/bin/clang++",
+            "cStandard": "c17",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "macos-clang-arm64"
+        }
+    ],
+    "version": 4
+}
