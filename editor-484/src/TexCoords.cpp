@@ -69,6 +69,48 @@ glm::vec3 Texture::sample(float u, float v) const {
     // Wrap u and v into [0, 1), find the four surrounding texels, and
     // blend them. Texel CENTRES sit at (i + 0.5) / size, which is why the
     // -0.5 below matters: without it the image is offset by half a texel.
-    (void)u; (void)v;
-    return glm::vec3(1.0f);
+    
+    // 1. Check for valid texture
+    if (!valid()) return glm::vec3(1.0f, 0.0f, 1.0f); // Return magenta for invalid texture
+
+    // 2. Wrap u and v into [0, 1)
+    u = u - std::floor(u);
+    v = v - std::floor(v);
+
+    // 3. Convert to texel space
+    float x = u * width - 0.5f;
+    float y = v * height - 0.5f;
+
+    // 4. Find the four surrounding texels
+    int x0 = static_cast<int>(std::floor(x));
+    int y0 = static_cast<int>(std::floor(y));
+
+    // 5. Fractional  distance
+    float fx = x - static_cast<float>(x0);
+    float fy = y - static_cast<float>(y0);
+
+    // 6. Calculate the indices needed for our top pixels
+    xs[2]={
+        ((x0 % width) + width) % width, 
+        ((x0 + 1) % width + width) % width
+    };
+    ys[2]={
+        ((y0 % height) + height) % height, 
+        ((y0 + 1) % height + height) % height
+    };
+
+    // 7. 2x2 array to hold colors of the four surrounding texels
+    glm::vec3 colors[2][2];
+
+    for (int j=0; j < 2; ++j) {
+        for (int i = 0; i < 2; ++i) {
+            int index = (ys[j] * width + xs[i]) * 4; // RGBA8 has 4 channels
+            colors[j][i] = glm::vec3(
+                pixels[index] / 255.0f,
+                pixels[index + 1] / 255.0f,
+                pixels[index + 2] / 255.0f
+            );
+        }
+    }   
+
 }
