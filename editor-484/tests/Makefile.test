@@ -11,6 +11,10 @@
 CXX      = g++
 CXXFLAGS = -std=c++11 -g -Wall -DGLM_ENABLE_EXPERIMENTAL -Iinclude -Iinclude/glad -Iinclude/tinydialog -Isrc/stb
 
+ifeq ($(shell uname -s), Darwin)
+    CXXFLAGS += -I/opt/homebrew/include -I/usr/local/include -I/opt/local/include
+endif
+
 OBJ_DIR  = obj
 CORE_OBJS = $(OBJ_DIR)/Shape.o \
             $(OBJ_DIR)/ShapeManager.o \

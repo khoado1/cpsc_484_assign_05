@@ -90,11 +90,11 @@ glm::vec3 Texture::sample(float u, float v) const {
     float fy = y - static_cast<float>(y0);
 
     // 6. Calculate the indices needed for our top pixels
-    xs[2]={
+    int xs[2] = {
         ((x0 % width) + width) % width, 
         ((x0 + 1) % width + width) % width
     };
-    ys[2]={
+    int ys[2] = {
         ((y0 % height) + height) % height, 
         ((y0 + 1) % height + height) % height
     };
@@ -113,4 +113,10 @@ glm::vec3 Texture::sample(float u, float v) const {
         }
     }   
 
+    // 8. Interpolate horizontally
+    glm::vec3 top = colors[0][0] + (colors[0][1] - colors[0][0]) * fx;
+    glm::vec3 bottom = colors[1][0] + (colors[1][1] - colors[1][0]) * fx;
+
+    // 9. Interpolate vertically
+    return top + (bottom - top) * fy;
 }
