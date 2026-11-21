@@ -27,8 +27,27 @@ std::vector<glm::vec2> cube(const std::vector<glm::vec3>& vertices,
     // Three per face, in the order the corners appear in `faces`. Project
     // each vertex onto the two axes the face normal is NOT aligned with.
     // faceNormals is indexed faceNormals[i / 2]: two triangles per face.
-    (void)vertices; (void)faces; (void)faceNormals;
-    return std::vector<glm::vec2>();
+
+    std::vector<glm::vec2> uvs;
+    uvs.reserve(faces.size() * 3);
+
+    for (size_t i = 0; i < faces.size(); ++i) {
+        const glm::vec3& n = faceNormals[i / 2];
+
+        // Determine the two axes to project onto based on the face normal
+        int uAxis, vAxis;
+        if (std::fabs(n.z) > 0.5) { uAxis = 0; vAxis = 1; } // Project onto XY plane
+        else if (std::fabs(n.x) > 0.5) { uAxis = 2; vAxis = 1; } // Project onto YZ plane
+        else { uAxis = 0; vAxis = 2; } // Project onto XZ plane
+        
+        for (int j = 0; j < 3; ++j) {
+            const glm::vec3& p = vertices[faces[i][j]];
+    
+            uvs.push_back(glm::vec2(p[uAxis] + 0.5f, p[vAxis] + 0.5f)); // Shift to [0, 1] range
+        }
+    }
+
+    return uvs;
 }
 
 // Cylindrical projection, one UV per triangle corner.
