@@ -1,0 +1,111 @@
+editor-scene 1
+# Editor scene file. Plain text on purpose - safe to read and diff.
+
+[scene]
+shapeCounter=5
+
+[camera]
+position=-0.66986054 -2.3538616 5.3471513
+target=-1.2626333 -2.2998624 -0.019946773
+radius=5.4000034
+orbit=1.4607965 -0.01
+
+[render]
+mode=1
+background=0.1 0.1 0.1
+width=640
+height=480
+maxDepth=4
+samplesPerPixel=1
+shadows=1
+reflections=1
+refractions=1
+transparentShadows=1
+shadowBias=0.001
+
+[timeline]
+length=5
+loop=1
+
+[shape]
+type=Light
+id=1
+name=Light
+position=1.5 3 4
+rotation=0 0 0
+uniformScaling=1
+scale=1
+scaleXYZ=1 1 1
+colorIndex=30
+customColor=0 0 0
+material=1 1 1 32 0 0 1.5
+lightType=0
+enabled=1
+lightColor=1 1 1
+intensity=1
+scales=0.15 1 0.8
+direction=0 -1 0
+attenuation=1 0 0
+
+[shape]
+type=Sphere
+id=2
+name=Sphere
+position=-2.4 0 0
+rotation=358 0 0
+uniformScaling=1
+scale=1
+scaleXYZ=1 1 1
+colorIndex=31
+customColor=1 1 1
+material=1 1 1 32 0 0 1.5
+texture=/Users/albundy/dev/cpsc_484_assign_05/editor-484/data/textures/uv-grid.png
+
+[shape]
+type=Cube
+id=3
+name=Cube
+position=-0.4 -3.1 0
+rotation=5 138 28
+uniformScaling=1
+scale=1
+scaleXYZ=1 1 1
+colorIndex=31
+customColor=1 0.93333334 1
+material=0.77 0.91 0.25 1 0 0 1.5
+texture=/Users/albundy/dev/cpsc_484_assign_05/editor-484/data/textures/uv-grid.png
+
+[shape]
+type=Teapot
+id=4
+name=Teapot
+position=3.4 0 0.3
+rotation=0 211 0
+uniformScaling=1
+scale=1
+scaleXYZ=1 1 1
+colorIndex=31
+customColor=1 1 1
+material=1 1 1 32 0 0 1.5
+texture=/Users/albundy/dev/cpsc_484_assign_05/editor-484/data/textures/uv-grid.png
+
+[shape]
+type=Light
+id=5
+name=Light
+position=-0.2 -3.7 2.6
+rotation=345 333 350
+uniformScaling=1
+scale=1
+scaleXYZ=1 1 1
+colorIndex=30
+customColor=0 0 0
+material=1 1 1 32 0 0 1.5
+lightType=0
+enabled=1
+lightColor=1 1 1
+intensity=1
+scales=0.15 1 0.8
+direction=0 -1 0
+attenuation=1 0 0
+

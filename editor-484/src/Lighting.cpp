@@ -87,6 +87,11 @@ glm::vec3 phongContribution(const SceneLightSample& light,
     //
     // Returning just the ambient term is a usable checkpoint: flat, unlit
     // silhouettes in roughly the right colours.
-    (void)n; (void)viewDir; (void)lightDir; (void)reach;
-    return light.ambient * mat.ambient * baseColor;
+    
+    glm::vec3 ambient = light.ambient * mat.ambient * baseColor;
+    glm::vec3 diffuse = light.diffuse * mat.diffuse * baseColor * std::max(glm::dot(n, lightDir), 0.0f) * reach;
+    glm::vec3 reflectDir = glm::reflect(-lightDir, n);
+    glm::vec3 specular = light.specular * mat.specular * std::pow(std::max(glm::dot(viewDir, reflectDir), 0.0f), mat.shininess) * reach;
+
+    return ambient + diffuse + specular;
 }
