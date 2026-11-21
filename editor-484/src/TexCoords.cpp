@@ -16,8 +16,18 @@ std::vector<glm::vec2> sphere(unsigned latSegments, unsigned lonSegments) {
     // TODO(textures): generate one UV per sphere vertex
     // Walk the same loop bounds Sphere::setupSphere uses, so entry i here
     // matches vertex i there. Remember v runs bottom-up for OpenGL.
-    (void)latSegments; (void)lonSegments;
-    return std::vector<glm::vec2>();
+   
+    std::vector<glm::vec2> uvs;
+    uvs.reserve((latSegments + 1) * (lonSegments + 1));
+
+    for (unsigned y = 0; y <= latSegments; ++y) {
+        for (unsigned x = 0; x <= lonSegments; ++x) {
+            float u = static_cast<float>(x) / lonSegments;
+            float v = static_cast<float>(y) / latSegments;
+            uvs.push_back(glm::vec2(1-u, 1-v));
+        }
+    }
+    return uvs;
 }
 
 std::vector<glm::vec2> cube(const std::vector<glm::vec3>& vertices,
