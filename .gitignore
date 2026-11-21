@@ -1,2 +1,16 @@
 .DS_Store
 editor-484/bvh_test.dSYM/
+editor-484/geometry_test.dSYM/
+editor-484/obj_parser_test.dSYM/
+editor-484/texture_test.dSYM/
+editor-484/g.dSYM/
+editor-484/raytrace_test.dSYM/
+editor-484/render_section_test.dSYM/
+editor-484/scene_test.dSYM/
+editor-484/specular_through_glass.dSYM/
+editor-484/transform_test.dSYM/
+editor-484/vr_view_test.dSYM/
+editor-484/camera_test.dSYM/
+editor-484/dirty_state_test.dSYM/
+editor-484/keyframe_test.dSYM/
+editor-484/lighting_test.dSYM/

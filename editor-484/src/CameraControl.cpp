@@ -100,7 +100,7 @@ void Camera::pan(float dxScreen, float dyScreen) {
     glm::vec3 right = glm::normalize(glm::cross(forward, up));
     glm::vec3 upDir = glm::normalize(glm::cross(right, forward));
 
-    target += right * dxScreen + upDir * dyScreen;
+    target += -right * dxScreen + upDir * dyScreen;
     updatePosition();
 }
 

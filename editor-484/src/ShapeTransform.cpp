@@ -102,6 +102,6 @@ glm::mat4 Shape::getModelMatrix() const {
         0.0f,   0.0f,   0.0f,   1.0f
     );
 
-    return T * Rotz * Roty * Rotx * S;
+    return T * Rotx * Roty * Rotz * S;
 }
 

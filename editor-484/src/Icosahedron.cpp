@@ -1,6 +1,8 @@
 #include "Icosahedron.h"
 #include "TexCoords.h"
 
+#include <cmath>
+
 Icosahedron::Icosahedron(float x, float y, float z, float uniformScale, int colorIndex, int id,
                float scaleX, float scaleY, float scaleZ, bool useUniformScaling)
     : Shape(x, y, z, uniformScale, colorIndex, id, scaleX, scaleY, scaleZ, useUniformScaling), VAO(0), VBO(0), EBO(0) {
@@ -28,16 +30,24 @@ void Icosahedron::setupIcosahedron() {
     // counter-clockwise winding seen from outside, every face index a valid
     // index into `vertices`.
     //
-    // What is here is a placeholder: a single square in the XY plane. It is
-    // deliberately not the shape you were asked for -- it is here so the
-    // editor runs, the Insert menu does something visible, and you can see
-    // your geometry replace it as you write it. Read src/Torus.cpp first;
-    // it is the worked example of a procedural shape.
-    vertices = { {-0.5f, -0.5f, 0.0f}, { 0.5f, -0.5f, 0.0f},
-                 { 0.5f,  0.5f, 0.0f}, {-0.5f,  0.5f, 0.0f} };
-    normals  = { {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f},
-                 {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f} };
-    faces    = { {0, 1, 2}, {0, 2, 3} };
+    const float phi = (1.0f + std::sqrt(5.0f)) * 0.5f;
+    const float scale = 0.5f / phi;
+    vertices = {
+        {-scale, phi * scale, 0.0f}, { scale, phi * scale, 0.0f},
+        {-scale, -phi * scale, 0.0f}, { scale, -phi * scale, 0.0f},
+        {0.0f, -scale, phi * scale}, {0.0f, scale, phi * scale},
+        {0.0f, -scale, -phi * scale}, {0.0f, scale, -phi * scale},
+        {phi * scale, 0.0f, -scale}, {phi * scale, 0.0f, scale},
+        {-phi * scale, 0.0f, -scale}, {-phi * scale, 0.0f, scale}
+    };
+    faces = {
+        {0, 11, 5}, {0, 5, 1}, {0, 1, 7}, {0, 7, 10}, {0, 10, 11},
+        {1, 5, 9}, {5, 11, 4}, {11, 10, 2}, {10, 7, 6}, {7, 1, 8},
+        {3, 9, 4}, {3, 4, 2}, {3, 2, 6}, {3, 6, 8}, {3, 8, 9},
+        {4, 9, 5}, {2, 4, 11}, {6, 2, 10}, {8, 6, 7}, {9, 8, 1}
+    };
+    normals.clear();
+    calculateNormals();
 
     // Build vertex data and index data for OpenGL
     

@@ -87,8 +87,45 @@ std::vector<glm::vec2> cylindricalPerCorner(const std::vector<glm::vec3>& vertic
     // That repair is only expressible per corner, which is why this returns
     // per-corner UVs: one point in space needs two different u values
     // depending on which triangle is asking.
-    (void)vertices; (void)faces;
-    return std::vector<glm::vec2>();
+    std::vector<glm::vec2> uvs;
+    if (vertices.empty() || faces.empty()) return uvs;
+
+    float minY = vertices[0].y, maxY = vertices[0].y;
+    for (const auto& v : vertices) {
+        minY = std::min(minY, v.y);
+        maxY = std::max(maxY, v.y);
+    }
+
+    float spanY = (maxY - minY > 1e-6f) ? (maxY - minY) : 1.0f; // Avoid division by zero
+    const float pi = 3.14159265358979323846f;
+
+    uvs.reserve(faces.size() * 3);
+
+    for (size_t f = 0; f < faces.size(); ++f) {
+        const auto& face = faces[f];
+        glm::vec3 u(0.0f), v(0.0f);
+        for (int j = 0; j < 3; ++j) {
+            const glm::vec3& p = vertices[face[j]];
+            u[j] = (std::atan2(p.z, p.x) + pi) / (2.0f * pi);
+            v[j] = (p.y - minY) / spanY;
+        }
+
+        const float uMin = std::min(u[0], std::min(u[1], u[2]));
+        const float uMax = std::max(u[0], std::max(u[1], u[2]));
+        if (uMax - uMin > 0.5f) {
+            for (int j = 0; j < 3; ++j) {
+                if (u[j] < 0.5f) {
+                    u[j] += 1.0f;
+                }
+            }
+        }
+
+        for (int j = 0; j < 3; ++j) {
+            uvs.push_back(glm::vec2(u[j], v[j]));
+        }
+    }
+
+    return uvs;
 }
 
 } // namespace TexCoords

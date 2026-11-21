@@ -82,6 +82,11 @@ void Custom::setupCustom() {
         {-0.5f,  0.5f, -0.5f},  // 22
         {-0.5f,  1.5f, -0.5f}   // 23
     };
+
+    for (glm::vec3& vertex : vertices) {
+        vertex.x /= 3.0f;
+        vertex.y /= 3.0f;
+    }
         
     normals = {
         { 0.0f,  0.0f,  1.0f},  // Front
@@ -167,12 +172,11 @@ void Custom::setupCustom() {
         TexCoords::parametricGrid(uSteps, vSteps, true, false);
     texCoords.clear();
 
-    // Build vertex data and index data for OpenGL, using the PER-VERTEX normal
-    // so the surface is smooth rather than faceted.
+    // Build vertex data and index data for OpenGL with one flat normal per face.
     //
-    // SKIPS ANY FACE THAT INDEXES OUTSIDE `vertices` OR `normals`. This shape
-    // is the one the student designs, so its topology is whatever they made it
-    // -- and an off-by-one in their face indices is a normal thing to hit
+    // SKIPS ANY FACE THAT INDEXES OUTSIDE `vertices`. This shape is the one
+    // the student designs, so its topology is whatever they made it -- and
+    // an off-by-one in their face indices is a normal thing to hit
     // halfway through. Without this guard that mistake is not a wrong-looking
     // shape, it is an out-of-bounds read: undefined behaviour that usually
     // lands in heap slack and renders garbage, and occasionally crashes on
@@ -184,6 +188,9 @@ void Custom::setupCustom() {
     // plausible-looking triangle and hides the bug, while a missing one is
     // visible and geometry_test says so in as many words.
     size_t emitted = 0;
+    const std::vector<glm::vec3> normalDirections = normals;
+    normals.clear();
+    normals.reserve(faces.size());
     for (size_t i = 0; i < faces.size(); ++i) {
 
         bool usable = (faces[i].size() == 3);
@@ -196,6 +203,14 @@ void Custom::setupCustom() {
         }
         if (!usable) continue;
 
+        int normalIndex = i < 10 ? 0 :
+                        i < 20 ? 1 :
+                        i < 26 ? 2 :
+                        i < 32 ? 3 :
+                        i < 38 ? 4 : 5;
+        const glm::vec3& normal = normalDirections[normalIndex];
+        normals.push_back(normal);
+
         glm::vec3 color = (colorIndex == 31)
             ? glm::vec3(customColor[0], customColor[1], customColor[2])
             : glm::vec3(colorPresets[colorIndex].color[0],
@@ -205,13 +220,6 @@ void Custom::setupCustom() {
         for (int j = 0; j < 3; ++j) {
             int vertexIndex = faces[i][j];
             const glm::vec3& position = vertices[vertexIndex];
-            int normalIndex = i < 10 ? 0 :
-                            i < 20 ? 1 :
-                            i < 26 ? 2 :
-                            i < 32 ? 3 :
-                            i < 38 ? 4 : 5;
-
-            const glm::vec3& normal = normals[normalIndex];
 
             vertexData.insert(vertexData.end(), {position.x, position.y, position.z});
             vertexData.insert(vertexData.end(), {normal.x, normal.y, normal.z});

@@ -77,8 +77,6 @@ bool parseObj(std::istream& in, ObjMesh& out) {
             glm::vec2 texCoord;
             iss >> texCoord.x >> texCoord.y;
             texTable.push_back(texCoord);
-            out.texCoords.push_back(texCoord);
-            //out.hasTexCoords = true;
         } else if (token == "f") {
             std::vector<std::string> fields;
             std::string field;
@@ -89,10 +87,18 @@ bool parseObj(std::istream& in, ObjMesh& out) {
             std::vector<int> face;
             std::vector<glm::vec2> uvs;
             bool sawuv = false;
+            bool validFace = fields.size() >= 3;
 
             for (int k=0; k < 3 && k < fields.size(); ++k) {
                 int vi, ti, ni;
                 parseCorner(fields[k], out.vertices.size(), texTable.size(), out.normals.size(), vi, ti, ni);
+                if (vi < 0 || static_cast<size_t>(vi) >= out.vertices.size()) {
+                    validFace = false;
+                    break;
+                }
+                if (ni < 0 || static_cast<size_t>(ni) >= out.normals.size()) {
+                    ni = vi;
+                }
                 face.push_back(vi);
                 face.push_back(ni);
 
@@ -104,29 +110,8 @@ bool parseObj(std::istream& in, ObjMesh& out) {
                 uvs.push_back(uv);
             }
 
-            if (face.size() == 6) {  // three (vertex, normal) pairs
-                const glm::vec3& p0 = out.vertices[face[0]];
-                const glm::vec3& p1 = out.vertices[face[2]];
-                const glm::vec3& p2 = out.vertices[face[4]];
+            if (!validFace || face.size() != 6) continue;
 
-                glm::vec3 normal = glm::cross(p1 - p0, p2 - p0);
-                const float length = glm::length(normal);
-                if (length > 1e-8f) {
-                    normal /= length;
-                } else {
-                    normal = glm::vec3(0.0f, 0.0f, 1.0f);
-                }
-
-                const int generatedNormalIndex = static_cast<int>(out.normals.size());
-                out.normals.push_back(normal);
-
-                for (int corner = 0; corner < 3; ++corner) {
-                    if (face[corner * 2 + 1] < 0) {
-                        face[corner * 2 + 1] = generatedNormalIndex;
-                    }
-                }
-            }
-            
             out.faces.push_back(face);
             out.texCoords.insert(out.texCoords.end(), uvs.begin(), uvs.end());
             if (sawuv) {
@@ -134,6 +119,10 @@ bool parseObj(std::istream& in, ObjMesh& out) {
             }
 
         }
+    }
+
+    if (!out.hasTexCoords) {
+        out.texCoords.clear();
     }
 
     return !out.vertices.empty() && !out.faces.empty();

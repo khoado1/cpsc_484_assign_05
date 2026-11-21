@@ -30,7 +30,30 @@ LightGeometry lightGeometry(const SceneLightSample& light, const glm::vec3& poin
     // Leaving this as the default -- straight up, no falloff -- lights every
     // surface identically from above, which is a recognisable first result
     // rather than a black screen.
-    (void)light; (void)point;
+    
+    if (light.type == 1) { // DIRECTIONAL
+
+        //set g.attenuation to 1.0f, g.distance to infinity, and g.direction to the opposite of light.direction (normalized)
+        g.direction = -glm::normalize(light.direction); // towards light
+        g.distance = std::numeric_limits<float>::infinity();
+        g.attenuation = 1.0f;
+    } else { // POINT
+
+        // get light distance = length of difference from point to light > g.distance
+        glm::vec3 toLight = light.position - point;
+        g.distance = glm::length(toLight);
+
+        // g.direction is difference between point and light 2 sanity checks
+        if (g.distance > 1e-6f) {
+            g.direction = toLight / g.distance; // normalise
+        } else {
+            g.direction = glm::vec3(0.0f, 0.0f, 0.0f); // arbitrary
+        }
+
+        // g.attenuation = look at formula and at light.h
+        // g.attenuation = 1 / (constant + linear * d + quadratic * d^2)
+        g.attenuation = 1.0f / (light.constant + light.linear * g.distance + light.quadratic * g.distance * g.distance);
+    }
     return g;
 }
 
